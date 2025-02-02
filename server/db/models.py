@@ -72,14 +72,10 @@ class Author(SQLModel, table=True):
     id: int = Field(default_factory=generate_id, primary_key=True)
     name: str
     bio: str
-    created_at: datetime = Field(default=datetime.now(timezone.utc))
-
-
-class AuthorPhoto(SQLModel, table=True):
-    author_id: Optional[int] = Field(foreign_key="author.id", primary_key=True)
-    photo_hash: Optional[str] = Field(
+    avatar_hash: Optional[str] = Field(
         default=None, foreign_key="asset.hash", primary_key=True
     )
+    created_at: datetime = Field(default=datetime.now(timezone.utc))
 
 
 class CommentContentText(BaseModel):
