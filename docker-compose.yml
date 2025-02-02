@@ -1,0 +1,19 @@
+name: kaede
+
+services:
+  kaede:
+    container_name: kaede
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      # Do not edit the next line. If you want to change the path of the configuration file, please edit the CONFIG_LOCATION variable
+      - ${CONFIG_LOCATION}:/kaede/server/config.yml
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    restart: always
+
+volumes:
+  database:

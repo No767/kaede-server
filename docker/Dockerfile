@@ -24,8 +24,10 @@ ENV PATH="${PATH}:/home/kaede/.local/bin"
 
 RUN pip install --user -r requirements.txt
 
+EXPOSE 8000
+
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["python3," "/kaede/server/launcher.py", "--no-workers"]
+CMD ["python3", "/kaede/server/launcher.py", "--no-workers"]
 
 STOPSIGNAL SIGTERM

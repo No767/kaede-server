@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import hashlib
 import hmac
 import secrets
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
 import db
 from db.models import Session
@@ -12,8 +10,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import select
 
-if TYPE_CHECKING:
-    from .types import Database
+from .types import Database
 
 SESSION_EXPIRY = timedelta(days=7)
 SESSION_RENEW_AFTER = timedelta(days=1)
