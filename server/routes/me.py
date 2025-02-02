@@ -18,7 +18,7 @@ from sqlmodel import (
     select,
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
-from utils.pages import KaedeOffsetPage, KaedeOffsetParams
+from utils.pages import KaedePages, KaedeParams
 from utils.sessions import authorize, hash_password, new_session, verify_password
 
 from .assets import assert_asset_hash
@@ -174,8 +174,8 @@ async def get_my_books(
     me_id: int = Depends(authorize),
     db: AsyncSession = Depends(db.use),
     *,
-    params: Annotated[KaedeOffsetParams, Depends()],
-) -> KaedeOffsetPage[Book]:
+    params: Annotated[KaedeParams, Depends()],
+) -> KaedePages[Book]:
     """Get the authenticated user's collection of books"""
     query = (
         select(User)

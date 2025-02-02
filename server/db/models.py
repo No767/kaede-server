@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Annotated, Literal, Optional, Union
 
 from pydantic import BaseModel
@@ -11,6 +12,13 @@ from sqlmodel import (
 )
 
 from .id import generate_id
+
+
+class RoleAccess(int, Enum):
+    PUBLIC = 0
+    MOD = 1
+    ADMIN = 2
+    HIGHEST = ADMIN
 
 
 class Session(SQLModel, table=True):
