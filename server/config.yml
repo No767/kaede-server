@@ -1,2 +1,6 @@
+kaede:
+  host: "127.0.0.1"
+  port: "8000"
+  echo: True
+
 sqlite_url: sqlite+aiosqlite:///database.db
-echo: True
