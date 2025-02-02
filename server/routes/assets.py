@@ -1,5 +1,5 @@
 import io
-from typing import TYPE_CHECKING, Annotated, Any, Optional
+from typing import Annotated, Any, Optional
 
 import db
 from db.models import (
@@ -11,9 +11,7 @@ from pydantic import BaseModel
 from sqlmodel import select
 from utils.assets import hash_bytes
 from utils.sessions import authorize
-
-if TYPE_CHECKING:
-    from utils.types import Database
+from utils.types import Database
 
 UPLOAD_LIMIT = 1024 * 1024 * 5  # 5 MB
 

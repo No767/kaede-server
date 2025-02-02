@@ -1,13 +1,11 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 import db
 from db.models import Tags
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlmodel import desc, select
-
-if TYPE_CHECKING:
-    from utils.types import Database
+from utils.types import Database
 
 router = APIRouter(tags=["Tags"])
 

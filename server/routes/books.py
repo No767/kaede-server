@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 import db
 from db.models import Book, Tags
@@ -10,9 +10,7 @@ from sqlmodel import desc, select
 from utils.pages import KaedePages, KaedeParams
 from utils.responses import OkResponse
 from utils.sessions import authorize
-
-if TYPE_CHECKING:
-    from utils.types import Database
+from utils.types import Database
 
 router = APIRouter(tags=["books"])
 

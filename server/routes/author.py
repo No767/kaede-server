@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Annotated, Optional
+from typing import Annotated, Optional
 
 import db
 from db.models import Author
@@ -10,11 +10,9 @@ from sqlmodel import delete, desc, select
 from utils.pages import KaedeParams
 from utils.responses import OkResponse
 from utils.sessions import authorize
+from utils.types import Database
 
 from .assets import assert_asset_hash
-
-if TYPE_CHECKING:
-    from utils.types import Database
 
 router = APIRouter(tags=["Authors"])
 

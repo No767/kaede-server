@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Annotated, Optional
+from typing import Annotated, Optional
 
 import db
 from db.id import generate_id
@@ -19,11 +19,9 @@ from sqlmodel import (
 )
 from utils.pages import KaedePages, KaedeParams
 from utils.sessions import authorize, hash_password, new_session, verify_password
+from utils.types import Database
 
 from .assets import assert_asset_hash
-
-if TYPE_CHECKING:
-    from utils.types import Database
 
 router = APIRouter(tags=["me"])
 
