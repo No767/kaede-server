@@ -2,7 +2,7 @@ import hashlib
 import hmac
 import secrets
 from datetime import datetime, timedelta
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
 import db
 from db.models import Session
@@ -16,8 +16,8 @@ SESSION_RENEW_AFTER = timedelta(days=1)
 
 
 async def authorize(
-    creds: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
-    db: AsyncSession = Depends(db.use),
+    creds: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> AsyncGenerator[int, None]:
     """
     This function asserts the authorization header and returns the user ID if

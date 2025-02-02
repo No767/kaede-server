@@ -1,11 +1,11 @@
 import io
-from typing import Optional
+from typing import Annotated, Any, Optional
 
 import db
 from db.models import (
     Asset,
 )
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel import select
@@ -32,8 +32,8 @@ router = APIRouter(tags=["assets"])
 )
 async def get_asset(
     asset_hash: str,
-    db: AsyncSession = Depends(db.use),
-    me: str = Depends(authorize),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> StreamingResponse:
     """
     This function returns an asset by hash.
@@ -55,7 +55,7 @@ class GetAssetMetadataResponse(BaseModel):
 @router.get("/assets/{asset_hash}/metadata")
 async def get_asset_metadata(
     asset_hash: str,
-    db: AsyncSession = Depends(db.use),
+    db: Annotated[AsyncSession, Depends(db.use)],
     me: str = Depends(authorize),
 ) -> GetAssetMetadataResponse:
     """
@@ -78,9 +78,9 @@ class UploadFileResponse(BaseModel):
 @router.post("/assets")
 async def upload_asset(
     file: UploadFile,
-    alt: Optional[str] = Form(default=None),
-    db: AsyncSession = Depends(db.use),
-    _=Depends(authorize),
+    alt: Optional[str],
+    _: Annotated[Any, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> UploadFileResponse:
     """
     Uploads an asset and returns its hash.

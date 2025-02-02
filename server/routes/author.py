@@ -39,7 +39,10 @@ class EditAuthorResponse(BaseModel):
 
 @router.patch("/author/{id}")
 async def edit_author(
-    id: uuid.UUID, req: EditAuthorResponse, *, db: AsyncSession = Depends(db.use)
+    id: uuid.UUID,
+    req: EditAuthorResponse,
+    *,
+    db: Annotated[AsyncSession, Depends(db.use)],
 ):
     if req.avatar_hash:
         await assert_asset_hash(db, req.avatar_hash)
@@ -68,7 +71,10 @@ async def edit_author(
 
 @router.delete("/author/{id}")
 async def delete_author(
-    id: int, me_id: int = Depends(authorize), db: AsyncSession = Depends(db.use)
+    id: int,
+    *,
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ):
-    await db.delete(delete(Author).where(Author.id == id))
+    await db.delete(delete(Author).where(Author.id == id))  # type: ignore # Pyright is tripping up again...
     return OkResponse()

@@ -17,7 +17,9 @@ router = APIRouter(tags=["books"])
 
 @router.get("/books")
 async def get_books(
-    db: AsyncSession = Depends(db.use), *, params: Annotated[KaedeParams, Depends()]
+    db: Annotated[AsyncSession, Depends(db.use)],
+    *,
+    params: Annotated[KaedeParams, Depends()],
 ) -> KaedePages[Book]:
     """Get a paginated list of books"""
     query = select(Book).order_by(desc(Book.created_at))
@@ -25,7 +27,9 @@ async def get_books(
 
 
 @router.get("/books/{id}")
-async def get_book(id: uuid.UUID, *, db: AsyncSession = Depends(db.use)) -> Book:
+async def get_book(
+    id: uuid.UUID, *, db: Annotated[AsyncSession, Depends(db.use)]
+) -> Book:
     """Gets information about a book specified via ID"""
     return (await db.exec(select(Book).where(Book.id == id))).one()
 
@@ -40,8 +44,8 @@ async def edit_book(
     id: uuid.UUID,
     req: EditBookResponse,
     *,
-    db: AsyncSession = Depends(db.use),
-    me_id: int = Depends(authorize),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> Book:
     book = (
         await db.exec(select(Book).where(Book.id == id).where(Book.owner == me_id))
@@ -55,7 +59,9 @@ async def edit_book(
 
 @router.delete("/books/{id}")
 async def delete_book(
-    id: uuid.UUID, db: AsyncSession = Depends(db.use), me_id: int = Depends(authorize)
+    id: uuid.UUID,
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ):
     await db.delete(select(Book).where(Book.id == id).where(Book.owner == me_id))
     return OkResponse()
@@ -72,8 +78,8 @@ class CreateBookResponse(BaseModel):
 async def create_book(
     req: CreateBookResponse,
     *,
-    db: AsyncSession = Depends(db.use),
-    me_id: int = Depends(authorize),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> Book:
     async with db.begin_nested():
         book = Book(owner=me_id, **req.model_dump(exclude={"tags": False}))

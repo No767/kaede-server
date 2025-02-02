@@ -33,8 +33,7 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 async def login(
-    req: LoginRequest,
-    db: AsyncSession = Depends(db.use),
+    req: LoginRequest, db: Annotated[AsyncSession, Depends(db.use)]
 ) -> Session:
     """
     This function logs in a user and returns a session token.
@@ -65,8 +64,7 @@ class RegisterRequest(BaseModel):
 
 @router.post("/register")
 async def register(
-    req: RegisterRequest,
-    db: AsyncSession = Depends(db.use),
+    req: RegisterRequest, db: Annotated[AsyncSession, Depends(db.use)]
 ) -> Session:
     """
     This function registers a new user and returns a session token.
@@ -96,8 +94,8 @@ class MeResponse(BaseModel):
 
 @router.get("/users/me")
 async def get_self(
-    db: AsyncSession = Depends(db.use),
-    me_id: int = Depends(authorize),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> MeResponse:
     """
     This function returns the currently authenticated user.
@@ -115,8 +113,8 @@ class UpdateUserRequest(RegisterRequest):
 @router.patch("/users/me")
 async def update_user(
     req: UpdateUserRequest,
-    me_id: int = Depends(authorize),
-    db: AsyncSession = Depends(db.use),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
 ) -> User:
     """
     Updates the specified authenticated user
@@ -171,8 +169,8 @@ async def update_user(
 
 @router.get("/users/me/books")
 async def get_my_books(
-    me_id: int = Depends(authorize),
-    db: AsyncSession = Depends(db.use),
+    me_id: Annotated[int, Depends(authorize)],
+    db: Annotated[AsyncSession, Depends(db.use)],
     *,
     params: Annotated[KaedeParams, Depends()],
 ) -> KaedePages[Book]:
