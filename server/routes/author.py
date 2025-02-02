@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated, Optional
+from typing import TYPE_CHECKING, Annotated, Optional
 
 import db
 from db.models import Author
@@ -7,19 +7,21 @@ from fastapi import APIRouter, Depends
 from fastapi_pagination.ext.sqlmodel import paginate
 from pydantic import BaseModel
 from sqlmodel import delete, desc, select
-from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.pages import KaedeParams
 from utils.responses import OkResponse
 from utils.sessions import authorize
 
 from .assets import assert_asset_hash
 
+if TYPE_CHECKING:
+    from utils.types import Database
+
 router = APIRouter(tags=["Authors"])
 
 
 @router.get("/author")
 async def list_authors(
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
     *,
     params: Annotated[KaedeParams, Depends()],
 ):
@@ -28,7 +30,7 @@ async def list_authors(
 
 
 @router.get("/author/{id}")
-async def get_author(id: uuid.UUID, *, db: Annotated[AsyncSession, Depends(db.use)]):
+async def get_author(id: uuid.UUID, *, db: Annotated[Database, Depends(db.use)]):
     return (await db.exec(select(Author).where(Author.id == id))).one()
 
 
@@ -42,7 +44,7 @@ async def edit_author(
     id: uuid.UUID,
     req: EditAuthorResponse,
     *,
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ):
     if req.avatar_hash:
         await assert_asset_hash(db, req.avatar_hash)
@@ -74,7 +76,7 @@ async def delete_author(
     id: int,
     *,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ):
     await db.delete(delete(Author).where(Author.id == id))  # type: ignore # Pyright is tripping up again...
     return OkResponse()

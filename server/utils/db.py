@@ -1,15 +1,16 @@
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING, AsyncGenerator
 
 import sqlalchemy
 from fastapi import HTTPException
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .requests import RouteRequest
+if TYPE_CHECKING:
+    from .requests import RouteRequest
+    from .types import Database
 
 
 # For async info on SQLModel, see
 # https://github.com/tiangolo/sqlmodel/pull/58.
-async def use(request: RouteRequest) -> AsyncGenerator[AsyncSession, None]:
+async def use(request: RouteRequest) -> AsyncGenerator[Database, None]:
     """
     This function is a context manager that yields a database session.
     Use this in FastAPI route functions to access the database.

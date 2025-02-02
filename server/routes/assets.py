@@ -1,5 +1,5 @@
 import io
-from typing import Annotated, Any, Optional
+from typing import TYPE_CHECKING, Annotated, Any, Optional
 
 import db
 from db.models import (
@@ -9,9 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.assets import hash_bytes
 from utils.sessions import authorize
+
+if TYPE_CHECKING:
+    from utils.types import Database
 
 UPLOAD_LIMIT = 1024 * 1024 * 5  # 5 MB
 
@@ -33,7 +35,7 @@ router = APIRouter(tags=["assets"])
 async def get_asset(
     asset_hash: str,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> StreamingResponse:
     """
     This function returns an asset by hash.
@@ -55,7 +57,7 @@ class GetAssetMetadataResponse(BaseModel):
 @router.get("/assets/{asset_hash}/metadata")
 async def get_asset_metadata(
     asset_hash: str,
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
     me: str = Depends(authorize),
 ) -> GetAssetMetadataResponse:
     """
@@ -80,7 +82,7 @@ async def upload_asset(
     file: UploadFile,
     alt: Optional[str],
     _: Annotated[Any, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> UploadFileResponse:
     """
     Uploads an asset and returns its hash.
@@ -107,7 +109,7 @@ async def upload_asset(
     return UploadFileResponse(**asset.model_dump())
 
 
-async def assert_asset_hash(db: AsyncSession, hash: str):
+async def assert_asset_hash(db: Database, hash: str):
     asset = (await db.exec(select(Asset.hash).where(Asset.hash == hash))).first()
     if asset is None:
         raise HTTPException(status_code=400, detail="Asset hash does not exist")

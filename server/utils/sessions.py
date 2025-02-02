@@ -2,14 +2,16 @@ import hashlib
 import hmac
 import secrets
 from datetime import datetime, timedelta
-from typing import Annotated, AsyncGenerator
+from typing import TYPE_CHECKING, Annotated, AsyncGenerator
 
 import db
 from db.models import Session
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
+
+if TYPE_CHECKING:
+    from .types import Database
 
 SESSION_EXPIRY = timedelta(days=7)
 SESSION_RENEW_AFTER = timedelta(days=1)
@@ -17,7 +19,7 @@ SESSION_RENEW_AFTER = timedelta(days=1)
 
 async def authorize(
     creds: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> AsyncGenerator[int, None]:
     """
     This function asserts the authorization header and returns the user ID if
@@ -49,7 +51,7 @@ async def authorize(
     yield session.user_id
 
 
-def new_session(db: AsyncSession, user_id: int) -> Session:
+def new_session(db: Database, user_id: int) -> Session:
     """
     This function creates a new session for a user and adds it to the database.
     The session is returned.

@@ -1,11 +1,13 @@
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING, AsyncGenerator
 
 import sqlalchemy
 from fastapi import HTTPException
-from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.requests import RouteRequest
 
 from . import models as models
+
+if TYPE_CHECKING:
+    from utils.types import Database
 
 
 @sqlalchemy.event.listens_for(sqlalchemy.engine.Engine, "connect")
@@ -18,7 +20,7 @@ def set_sqlite_pragma(conn, _):
 
 # For async info on SQLModel, see
 # https://github.com/tiangolo/sqlmodel/pull/58.
-async def use(request: RouteRequest) -> AsyncGenerator[AsyncSession, None]:
+async def use(request: RouteRequest) -> AsyncGenerator[Database, None]:
     """
     This function is a context manager that yields a database session.
     Use this in FastAPI route functions to access the database.

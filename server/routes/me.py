@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import TYPE_CHECKING, Annotated, Optional
 
 import db
 from db.id import generate_id
@@ -17,11 +17,13 @@ from sqlmodel import (
     Field,
     select,
 )
-from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.pages import KaedePages, KaedeParams
 from utils.sessions import authorize, hash_password, new_session, verify_password
 
 from .assets import assert_asset_hash
+
+if TYPE_CHECKING:
+    from utils.types import Database
 
 router = APIRouter(tags=["me"])
 
@@ -32,9 +34,7 @@ class LoginRequest(BaseModel):
 
 
 @router.post("/login")
-async def login(
-    req: LoginRequest, db: Annotated[AsyncSession, Depends(db.use)]
-) -> Session:
+async def login(req: LoginRequest, db: Annotated[Database, Depends(db.use)]) -> Session:
     """
     This function logs in a user and returns a session token.
     """
@@ -64,7 +64,7 @@ class RegisterRequest(BaseModel):
 
 @router.post("/register")
 async def register(
-    req: RegisterRequest, db: Annotated[AsyncSession, Depends(db.use)]
+    req: RegisterRequest, db: Annotated[Database, Depends(db.use)]
 ) -> Session:
     """
     This function registers a new user and returns a session token.
@@ -95,7 +95,7 @@ class MeResponse(BaseModel):
 @router.get("/users/me")
 async def get_self(
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> MeResponse:
     """
     This function returns the currently authenticated user.
@@ -114,7 +114,7 @@ class UpdateUserRequest(RegisterRequest):
 async def update_user(
     req: UpdateUserRequest,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> User:
     """
     Updates the specified authenticated user
@@ -170,7 +170,7 @@ async def update_user(
 @router.get("/users/me/books")
 async def get_my_books(
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
     *,
     params: Annotated[KaedeParams, Depends()],
 ) -> KaedePages[Book]:

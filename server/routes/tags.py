@@ -1,20 +1,19 @@
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import db
 from db.models import Tags
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlmodel import desc, select
-from sqlmodel.ext.asyncio.session import AsyncSession
-from utils.requests import RouteRequest
+
+if TYPE_CHECKING:
+    from utils.types import Database
 
 router = APIRouter(tags=["Tags"])
 
 
 @router.get("/tags")
-async def list_tags(
-    request: RouteRequest, db: Annotated[AsyncSession, Depends(db.use)]
-):
+async def list_tags(db: Annotated[Database, Depends(db.use)]):
     return (await db.exec(select(Tags).order_by(desc(Tags.name)))).all()
 
 
@@ -25,10 +24,9 @@ class TagCreateResponse(BaseModel):
 
 @router.post("/tags/create")
 async def create_tag(
-    request: RouteRequest,
     req: TagCreateResponse,
     *,
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ):
     async with db.begin_nested():
         tag = Tags(**req.model_dump())
@@ -41,10 +39,9 @@ async def create_tag(
 
 @router.post("/tags/bulk-create")
 async def bulk_create_tags(
-    request: RouteRequest,
     req: list[TagCreateResponse],
     *,
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ):
     async with db.begin_nested():
         created_tags = [Tags(**tag.model_dump()) for tag in req]

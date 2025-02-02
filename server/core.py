@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
-from typing import Optional, Self
+from typing import TYPE_CHECKING, Optional, Self
 
 import orjson
 import sqlalchemy
@@ -10,7 +10,10 @@ import sqlmodel
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
-from utils.config import KaedeConfig
+
+if TYPE_CHECKING:
+    from utils.config import KaedeConfig
+    from utils.types import Database
 
 __title__ = "Kaede"
 __description__ = """
@@ -48,7 +51,7 @@ class Kaede(FastAPI):
 
     ### Server-related utilities
 
-    def get(self) -> AsyncSession:
+    def get(self) -> Database:
         """
         This function returns a new database session.
         """

@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import db
 from db.models import Book, Tags
@@ -7,17 +7,19 @@ from fastapi import APIRouter, Depends
 from fastapi_pagination.ext.sqlmodel import paginate
 from pydantic import BaseModel
 from sqlmodel import desc, select
-from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.pages import KaedePages, KaedeParams
 from utils.responses import OkResponse
 from utils.sessions import authorize
+
+if TYPE_CHECKING:
+    from utils.types import Database
 
 router = APIRouter(tags=["books"])
 
 
 @router.get("/books")
 async def get_books(
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
     *,
     params: Annotated[KaedeParams, Depends()],
 ) -> KaedePages[Book]:
@@ -27,9 +29,7 @@ async def get_books(
 
 
 @router.get("/books/{id}")
-async def get_book(
-    id: uuid.UUID, *, db: Annotated[AsyncSession, Depends(db.use)]
-) -> Book:
+async def get_book(id: uuid.UUID, *, db: Annotated[Database, Depends(db.use)]) -> Book:
     """Gets information about a book specified via ID"""
     return (await db.exec(select(Book).where(Book.id == id))).one()
 
@@ -45,7 +45,7 @@ async def edit_book(
     req: EditBookResponse,
     *,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> Book:
     book = (
         await db.exec(select(Book).where(Book.id == id).where(Book.owner == me_id))
@@ -61,7 +61,7 @@ async def edit_book(
 async def delete_book(
     id: uuid.UUID,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ):
     await db.delete(select(Book).where(Book.id == id).where(Book.owner == me_id))
     return OkResponse()
@@ -79,7 +79,7 @@ async def create_book(
     req: CreateBookResponse,
     *,
     me_id: Annotated[int, Depends(authorize)],
-    db: Annotated[AsyncSession, Depends(db.use)],
+    db: Annotated[Database, Depends(db.use)],
 ) -> Book:
     async with db.begin_nested():
         book = Book(owner=me_id, **req.model_dump(exclude={"tags": False}))
