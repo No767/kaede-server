@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - main
+      - dev
       
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   Analyze:
@@ -14,19 +16,25 @@ jobs:
 
     strategy:
       fail-fast: false
+      matrix:
+        version: ['3.12', '3.13']
 
     steps:
       - name: Checkout Repository  
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
-      - name: Install Pyright
+          python-version: ${{ matrix.version }}
+
+      - name: Install Tox
         run: |
-          pip install "pyright[nodejs]>=1.1.393,<2"
+          pip install "tox>=4.24.1,5"
 
       - name: Lint Codebase
         run: |
+          RAW_PYTHON_VERSION=${{ matrix.version }}
+          PYTHON_VERSION=$(echo $RAW_PYTHON_VERSION | sed 's/\.//')
+          tox -e py$PYTHON_VERSION
             

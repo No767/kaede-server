@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      - dev
     
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   Analyze:
@@ -22,7 +24,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Python 3
+    - name: Set up Python
       id: setup-python
       uses: actions/setup-python@v5
       with:
