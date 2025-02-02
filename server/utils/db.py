@@ -4,7 +4,7 @@ import sqlalchemy
 from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .request import RouteRequest
+from .requests import RouteRequest
 
 
 # For async info on SQLModel, see

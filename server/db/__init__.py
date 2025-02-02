@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import sqlalchemy
 from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
-from utils.request import RouteRequest
+from utils.requests import RouteRequest
 
 from . import models as models
 

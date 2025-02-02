@@ -33,11 +33,14 @@ class Asset(SQLModel, table=True):
     alt: str | None = Field(default=None)
 
 
+# We need to put some validation
 class Book(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(index=True)
     description: str
     image_hash: Optional[str] = Field(default=None, foreign_key="asset.hash")
+    author: int = Field(default=None, foreign_key="author.id")
+    owner: int = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default=datetime.now(timezone.utc))
     updated_at: datetime = Field(default=datetime.now(timezone.utc))
 
@@ -55,6 +58,20 @@ class Tags(SQLModel, table=True):
     id: int = Field(primary_key=True)
     name: str = Field(nullable=False)
     description: str
+
+
+class Author(SQLModel, table=True):
+    id: int = Field(default_factory=generate_id, primary_key=True)
+    name: str
+    bio: str
+    created_at: datetime = Field(default=datetime.now(timezone.utc))
+
+
+class AuthorPhoto(SQLModel, table=True):
+    author_id: Optional[int] = Field(foreign_key="author.id", primary_key=True)
+    photo_hash: Optional[str] = Field(
+        default=None, foreign_key="asset.hash", primary_key=True
+    )
 
 
 class CommentContentText(BaseModel):
@@ -132,14 +149,4 @@ class BookTags(SQLModel, table=True):
     tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
     book_id: Optional[uuid.UUID] = Field(
         default=None, foreign_key="book.id", primary_key=True
-    )
-
-
-# Might not need this
-class BookComments(SQLModel, table=True):
-    book_id: Optional[uuid.UUID] = Field(
-        default=None, foreign_key="book.id", primary_key=True
-    )
-    comments_id: Optional[int] = Field(
-        default=None, foreign_key="commentmessages.id", primary_key=True
     )

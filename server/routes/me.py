@@ -1,7 +1,6 @@
 from typing import Optional
 
 import db
-from assets import assert_asset_hash
 from db.id import generate_id
 from db.models import (
     Session,
@@ -17,6 +16,8 @@ from sqlmodel import (
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.sessions import authorize, hash_password, new_session, verify_password
+
+from .assets import assert_asset_hash
 
 router = APIRouter(tags=["me"])
 
