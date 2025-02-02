@@ -54,16 +54,9 @@ class RegisterRequest(BaseModel):
     This class is used to register a new user.
     """
 
+    bio: str
     email: str
     password: str
-
-    bio: str
-    color: str
-    nickname: str
-    preferred_name: str
-    genders: list[str]
-    pronouns: list[str]
-    sexual_orientations: list[str]
 
 
 @router.post("/register")
@@ -132,9 +125,6 @@ async def update_user(
     password = (
         await db.exec(select(UserPassword).where(UserPassword.id == me_id))
     ).one()
-
-    if req.nickname is None:
-        req.nickname = req.preferred_name
 
     for key, value in req.model_dump().items():
         match key:
