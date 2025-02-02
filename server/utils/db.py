@@ -1,10 +1,6 @@
 from typing import AsyncGenerator
 
 import sqlalchemy
-import sqlalchemy.engine
-import sqlalchemy.exc
-import sqlalchemy.ext.asyncio
-import sqlalchemy.ext.asyncio.session
 from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 

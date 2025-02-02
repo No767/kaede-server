@@ -6,15 +6,10 @@ from typing import Optional, Self
 
 import orjson
 import sqlalchemy
-import sqlalchemy.engine
-import sqlalchemy.exc
-import sqlalchemy.ext.asyncio
-import sqlalchemy.ext.asyncio.session
 import sqlmodel
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
-
 from utils.config import KaedeConfig
 
 __title__ = "Kaede"

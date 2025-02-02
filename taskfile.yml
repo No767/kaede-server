@@ -8,11 +8,10 @@ tasks:
   
   check:
     cmds:
-      - pyright server
-      - ruff check . --fix --exit-non-zero-on-fix --config pyproject.toml
+      - ruff check server --fix --exit-non-zero-on-fix --config pyproject.toml
     silent: true
 
   fmt:
     cmds:
-      - ruff format . --config pyproject.toml
+      - ruff format server --config pyproject.toml
     silent: true

@@ -6,27 +6,13 @@ readme = "README.md"
 requires-python = ">=3.9,<4.0"
 
 [tool.pyright]
-include = [
-    "routes/**",
-    "utils/**",
-    "core.py",
-    "launcher.py"
-]
-exclude = [
-    "**/__pycache__"
-]
+exclude = ["**/__pycache__"]
 reportMissingImports = true
 typeCheckingMode = "basic"
 reportUnnecessaryTypeIgnoreComment = "warning"
 
 [tool.ruff]
 line-length = 88
-extend-include = [
-    "routes/**",
-    "utils/**",
-    "core.py",
-    "launcher.py"
-]
 extend-exclude = ["**/__pycache__"]
 
 [tool.ruff.lint]

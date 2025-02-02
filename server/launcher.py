@@ -4,11 +4,10 @@ import sys
 from pathlib import Path
 
 import uvicorn
-from uvicorn.supervisors import Multiprocess
-
 from core import Kaede
 from routes import router
 from utils.config import KaedeConfig
+from uvicorn.supervisors import Multiprocess
 
 config_path = Path(__file__).parent / "config.yml"
 config = KaedeConfig(config_path)
