@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  start:
+    cmds:
+      - uvicorn launcher:app --reload
+    silent: true
+  
+  check:
+    cmds:
+      - pyright server
+      - ruff check . --fix --exit-non-zero-on-fix --config pyproject.toml
+    silent: true
+
+  fmt:
+    cmds:
+      - ruff format . --config pyproject.toml
+    silent: true
