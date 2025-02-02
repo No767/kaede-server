@@ -1,20 +1,24 @@
-from typing import Optional
+from typing import Annotated, Optional
 
 import db
 from db.id import generate_id
 from db.models import (
+    Book,
     Session,
     User,
+    UserCollection,
     UserPassword,
     UserPhoto,
 )
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_pagination.ext.sqlmodel import paginate
 from pydantic import BaseModel
 from sqlmodel import (
     Field,
     select,
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
+from utils.pages import KaedeOffsetPage, KaedeOffsetParams
 from utils.sessions import authorize, hash_password, new_session, verify_password
 
 from .assets import assert_asset_hash
@@ -163,3 +167,21 @@ async def update_user(
     await db.refresh(user)
 
     return user
+
+
+@router.get("/users/me/books")
+async def get_my_books(
+    me_id: int = Depends(authorize),
+    db: AsyncSession = Depends(db.use),
+    *,
+    params: Annotated[KaedeOffsetParams, Depends()],
+) -> KaedeOffsetPage[Book]:
+    """Get the authenticated user's collection of books"""
+    query = (
+        select(User)
+        .join(UserCollection)
+        .join(Book)
+        .where(UserCollection.user_id == me_id)
+        .where(Book.id == UserCollection.book_id)
+    )
+    return await paginate(db, query, params)
