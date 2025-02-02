@@ -13,6 +13,12 @@ from sqlmodel import (
 from .id import generate_id
 
 
+class Session(SQLModel, table=True):
+    token: str = Field(primary_key=True)
+    user_id: Optional[int] = Field(foreign_key="user.id")
+    expires_at: datetime = Field(default=datetime.now(timezone.utc))
+
+
 class Asset(SQLModel, table=True):
     """
     An asset is any arbitrary binary data that can be stored in the database.
@@ -39,6 +45,7 @@ class Book(SQLModel, table=True):
 class User(SQLModel, table=True):
     id: int = Field(default_factory=generate_id, primary_key=True)
     name: str
+    email: str
     bio: str
     avatar_hash: Optional[str] = Field(default=None, foreign_key="asset.hash")
     created_at: datetime = Field(default=datetime.now(timezone.utc))
@@ -95,6 +102,18 @@ class CommentMessage(SQLModel, table=True):
     content: CommentContent | None = Field(default=None, sa_column=Column(JSON))
 
     created_at: datetime = Field(default=datetime.now(timezone.utc))
+
+
+class UserPhoto(SQLModel, table=True):
+    user_id: Optional[int] = Field(foreign_key="user.id", primary_key=True)
+    photo_hash: Optional[str] = Field(
+        default=None, foreign_key="asset.hash", primary_key=True
+    )
+
+
+class UserPassword(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True, foreign_key="user.id")
+    passhash: str
 
 
 # Many-to-Many tables
