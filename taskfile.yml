@@ -3,7 +3,7 @@ version: '3'
 tasks:
   start:
     cmds:
-      - uvicorn launcher:app --reload
+      - uvicorn launcher:app --app-dir=server --reload
     silent: true
   
   check:
