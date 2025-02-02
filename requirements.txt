@@ -4,4 +4,3 @@ orjson>=3.10.10,<4
 aiosqlite>=0.20.0,<1
 sqlmodel>=0.0.22,<1
 PyYAML>=6.0.2,<7
-msgspec>=0.19.0,<1
